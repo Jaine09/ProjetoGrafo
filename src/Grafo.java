@@ -40,10 +40,10 @@ public class Grafo<TIPO>{
         Vertice<TIPO> vInicio = getVertice(inicio);
         Vertice<TIPO> vCulpado = getVertice(culpado);
         if (vInicio == null || vCulpado == null) return false;
-        return buscar(vInicio, (Vertice<String>) vCulpado, new HashSet<>());
+        return buscar(vInicio, vCulpado, new HashSet<>());
     }
 
-    private boolean buscar(Vertice<TIPO> atual, Vertice<String> alvo, Set<Vertice<TIPO>> visitados) {
+    private boolean buscar(Vertice<TIPO> atual, Vertice<TIPO> alvo, Set<Vertice<TIPO>> visitados) {
         if (atual.equals(alvo)) return true;
         visitados.add(atual);
         for (Aresta<TIPO> a : atual.getArestaSaida()) {
