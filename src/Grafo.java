@@ -1,66 +1,30 @@
 import java.util.*;
 
-public class Grafo<TIPO>{
-    private ArrayList<Vertice<TIPO>> suspeito;
-    private ArrayList<Aresta<TIPO>> pistas;
-    private Map<TIPO, String> caracteristicas = new HashMap<>();
+class Grafo<T> {
+    private Map<T, List<String>> pistas = new HashMap<>();
+    private Map<T, String> caracteristicas = new HashMap<>();
 
-
-    public Grafo() {
-        this.suspeito = new ArrayList<Vertice<TIPO>>();
-        this.pistas = new ArrayList<Aresta<TIPO>>();
+    public void adicionarSuspeito(T suspeito) {
+        pistas.putIfAbsent(suspeito, new ArrayList<>());
     }
 
-    public void adicionarSuspeito(TIPO dado){
-        Vertice<TIPO> novoSuspeito = new Vertice<TIPO>(dado);
-        this.suspeito.add(novoSuspeito);
+    public void adicionarCaracteristica(T suspeito, String descricao) {
+        caracteristicas.put(suspeito, descricao);
     }
 
-    public void adicionarPistas(String pista, TIPO dadoInicio, TIPO dadoFim){
-        Vertice<TIPO> inicio = this.getVertice(dadoInicio);
-        Vertice<TIPO> fim = this.getVertice(dadoFim);
-        Aresta<TIPO> aresta = new Aresta<TIPO>(pista,inicio,fim);
-        inicio.adicionarArestaSaida(aresta);
-        fim.adicionarArestaEntrada(aresta);
-        this.pistas.add(aresta);
+    public String getCaracteristica(T suspeito) {
+        return caracteristicas.get(suspeito);
     }
 
-    public Vertice<TIPO> getVertice(TIPO dado){
-        Vertice<TIPO> vertice = null;
-        for (int i=0; i < this.suspeito.size(); i++){
-            if (this.suspeito.get(i).getDado().equals(dado)){
-                vertice = this.suspeito.get(i);
-                break;
-            }
-        }
-        return vertice;
+    public void adicionarPistas(String pista, T de, T para) {
+        pistas.get(de).add("De " + de + " para " + para + ": " + pista);
     }
 
-    public boolean encontrarCulpado(TIPO inicio, TIPO culpado) {
-        Vertice<TIPO> vInicio = getVertice(inicio);
-        Vertice<TIPO> vCulpado = getVertice(culpado);
-        if (vInicio == null || vCulpado == null) return false;
-        return buscar(vInicio, vCulpado, new HashSet<>());
+    
+    public String getPistaAleatoria(T suspeito) {
+        List<String> lista = pistas.get(suspeito);
+        if (lista == null || lista.isEmpty()) return "Nenhuma pista disponível.";
+        Random random = new Random();
+        return lista.get(random.nextInt(lista.size()));
     }
-
-    public void adicionarCaracteristica(TIPO vertice, String caracteristica) {
-        caracteristicas.put(vertice, caracteristica);
-    }
-
-    public String getCaracteristica(TIPO vertice) {
-        return caracteristicas.get(vertice);
-    }
-
-
-    private boolean buscar(Vertice<TIPO> atual, Vertice<TIPO> alvo, Set<Vertice<TIPO>> visitados) {
-        if (atual.equals(alvo)) return true;
-        visitados.add(atual);
-        for (Aresta<TIPO> a : atual.getArestaSaida()) {
-            if (!visitados.contains(a.getFim()) && buscar(a.getFim(), alvo, visitados)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
