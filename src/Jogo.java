@@ -1,113 +1,131 @@
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Jogo {
     public static void main(String[] args) {
 
-        // --- Configuração do Grafo (AGORA MAIS COMPLEXO) ---
-
         Grafo<String> grafo = new Grafo<String>();
-        // Suspeitos Principais
+
+        // --- SUSPEITOS PRINCIPAIS ---
         grafo.adicionarSuspeito("Arielly");
-        grafo.adicionarSuspeito("Eduardo"); // Ponto de partida
+        grafo.adicionarSuspeito("Eduardo");
         grafo.adicionarSuspeito("Giulia");
         grafo.adicionarSuspeito("Camile");
         grafo.adicionarSuspeito("Alan");
-        grafo.adicionarSuspeito("Jaine");   // A Culpada
+        grafo.adicionarSuspeito("Jaine");
 
-        // --- NOVOS SUSPEITOS (Pistas Falsas / Distrações) ---
-        grafo.adicionarSuspeito("Lucas");
-        grafo.adicionarSuspeito("Beatriz");
+        // --- CARACTERÍSTICAS DE CADA PERSONAGEM ---
+        grafo.adicionarCaracteristica("Arielly", "Calma e gentil, sempre tenta ajudar os outros. Ultimamente anda nervosa.");
+        grafo.adicionarCaracteristica("Eduardo", "Trabalha com tecnologia. Observador e analítico, tenta resolver tudo com lógica.");
+        grafo.adicionarCaracteristica("Giulia", "Extrovertida e distraída. Vive chegando atrasada nas reuniões.");
+        grafo.adicionarCaracteristica("Camile", "Criativa e detalhista, costuma perceber o que ninguém mais nota.");
+        grafo.adicionarCaracteristica("Alan", "Brincalhão, mas tem dificuldade em guardar segredos.");
+        grafo.adicionarCaracteristica("Jaine", "Reservada e perfeccionista. Evita conflitos e prefere trabalhar sozinha.");
 
+        // --- PISTAS (CONEXÕES ENTRE OS SUSPEITOS) ---
+        grafo.adicionarPistas("O suspeito tem cabelo castanho.", "Eduardo", "Camile");
+        grafo.adicionarPistas("O suspeito trabalha diretamente com a vítima.", "Camile", "Jaine");
+        grafo.adicionarPistas("O suspeito parecia tenso ultimamente.", "Arielly", "Alan");
+        grafo.adicionarPistas("O suspeito sempre quer ir embora primeiro.", "Giulia", "Arielly");
+        grafo.adicionarPistas("O suspeito usa acessórios parecidos com os de Alan.", "Eduardo", "Alan");
+        grafo.adicionarPistas("O suspeito demonstrava nervosismo durante as reuniões.", "Camile", "Eduardo");
+        grafo.adicionarPistas("O suspeito fez comentários estranhos sobre o projeto.", "Alan", "Jaine");
+        grafo.adicionarPistas("O suspeito e Giulia discutiram recentemente.", "Giulia", "Alan");
+        grafo.adicionarPistas("O suspeito parece saber mais do que demonstra.", "Jaine", "Arielly");
+        grafo.adicionarPistas("O suspeito tem informações que não deveria saber.", "Alan", "Camile");
 
-        // --- ADICIONANDO AS PISTAS ---
+        // --- LISTA DE SUSPEITOS PARA SORTEIO ---
+        List<String> suspeitos = new ArrayList<>();
+        suspeitos.add("Arielly");
+        suspeitos.add("Eduardo");
+        suspeitos.add("Giulia");
+        suspeitos.add("Camile");
+        suspeitos.add("Alan");
+        suspeitos.add("Jaine");
 
-        // Caminho Correto (O "caminho dourado" para a solução)
-        grafo.adicionarPistas("O suspeito tem o cabelo castanho", "Eduardo", "Camile");
-        grafo.adicionarPistas("O suspeito trabalha com a vítima", "Camile", "Jaine");
+        Random random = new Random();
 
-        // --- PISTAS FALSAS, DISTRAÇÕES E CICLOS ---
+        // --- SORTEAR CULPADO ALEATÓRIO ---
+        String culpado = suspeitos.get(random.nextInt(suspeitos.size()));
 
-        // Pista "inútil" que não leva a lugar nenhum
-        grafo.adicionarPistas("O suspeito sempre quer ir embora", "Giulia", "Arielly");
+        // --- ESCOLHER SUSPEITO INICIAL ALEATÓRIO ---
+        Vertice<String> suspeitoAtual = grafo.getVertice(
+                suspeitos.get(random.nextInt(suspeitos.size()))
+        );
 
-        // Pistas que levam a um BECO SEM SAÍDA (Dead End)
-        grafo.adicionarPistas("O suspeito usa brincos como os de Alan", "Eduardo", "Alan");
-        grafo.adicionarPistas("Alan disse que viu Lucas perto da cena", "Alan", "Lucas");
-        // (Note que 'Lucas' não tem nenhuma pista saindo dele)
-
-        grafo.adicionarPistas("Camile foi vista discutindo com Beatriz", "Camile", "Beatriz");
-        // (Note que 'Beatriz' também não tem pistas saindo dela)
-
-        // Criando um CICLO (Alan <-> Arielly)
-        // O jogador pode ficar "preso" investigando os dois
-        grafo.adicionarPistas("O suspeito sempre compra lanche na cantina", "Eduardo", "Arielly");
-        grafo.adicionarPistas("Arielly disse que Alan estava agindo de modo estranho", "Arielly", "Alan");
-        grafo.adicionarPistas("Alan insiste que Arielly sabe de mais alguma coisa", "Alan", "Arielly");
-
-
-        // --- Lógica do Jogo Interativo (Exatamente como antes) ---
-
+        // --- INÍCIO DO JOGO ---
         Scanner sc = new Scanner(System.in);
-        Vertice<String> suspeitoAtual = grafo.getVertice("Eduardo");
-        String culpado = "Jaine";
         boolean investigando = true;
 
         System.out.println("=== JOGO DO DETETIVE ===");
+        System.out.println("Um sabotador causou um grande problema no projeto da equipe!");
+        System.out.println("Você precisa descobrir quem é o culpado observando as pistas e características.\n");
+
         System.out.println("Você começa investigando: " + suspeitoAtual.getDado());
-        System.out.println("Seu objetivo é encontrar o(a) culpado(a): " + culpado);
-        System.out.println("Siga as pistas corretas!");
+        System.out.println("Características: " + grafo.getCaracteristica(suspeitoAtual.getDado()));
 
         while (investigando) {
-            // 1. Verificar condição de vitória
-            if (suspeitoAtual.getDado().equals(culpado)) {
-                System.out.println("\n*** PARABÉNS! ***");
-                System.out.println("Você seguiu as pistas e encontrou a culpada: " + suspeitoAtual.getDado());
-                investigando = false;
-                continue;
-            }
-
-            // 2. Obter pistas (arestas de saída)
             ArrayList<Aresta<String>> pistas = suspeitoAtual.getArestaSaida();
 
-            // 3. Verificar condição de derrota (beco sem saída)
             if (pistas.isEmpty()) {
-                System.out.println("\n--- FIM DE JOGO ---");
-                System.out.println("Você chegou a um beco sem saída. O suspeito " + suspeitoAtual.getDado() + " não tem mais pistas para oferecer.");
-                System.out.println("Parece que você seguiu uma pista falsa.");
-                investigando = false;
-                continue;
+                System.out.println("\n--- Nenhuma pista disponível ---");
+                System.out.println("Parece que essa linha de investigação terminou.");
+                break;
             }
 
-            // 4. Mostrar opções para o usuário
             System.out.println("\nVocê está investigando: " + suspeitoAtual.getDado());
+            System.out.println("Características: " + grafo.getCaracteristica(suspeitoAtual.getDado()));
             System.out.println("Pistas disponíveis:");
+
             for (int i = 0; i < pistas.size(); i++) {
                 Aresta<String> pista = pistas.get(i);
-                System.out.println((i + 1) + ": " + pista.getPista() + " (Aponta para: " + pista.getFim().getDado() + ")");
+                System.out.println((i + 1) + ": " + pista.getPista());
             }
 
-            // 5. Obter escolha do usuário
             int escolha = 0;
             while (escolha < 1 || escolha > pistas.size()) {
-                System.out.print("Qual pista você quer seguir? (Digite o número 1-" + pistas.size() + "): ");
+                System.out.print("Escolha a pista (1-" + pistas.size() + "): ");
                 try {
                     escolha = sc.nextInt();
                 } catch (Exception e) {
-                    System.out.println("Por favor, digite apenas o número da opção.");
+                    System.out.println("Digite apenas números!");
                     sc.next();
                 }
             }
 
-            // 6. Atualizar o "suspeitoAtual" baseado na escolha
             Aresta<String> pistaEscolhida = pistas.get(escolha - 1);
             suspeitoAtual = pistaEscolhida.getFim();
 
+            System.out.println("\nA pista leva você até " + suspeitoAtual.getDado() + "...");
             System.out.println("-------------------------------------------------");
-            System.out.println("A pista '" + pistaEscolhida.getPista() + "' leva você até... " + suspeitoAtual.getDado());
+
+            // 🔍 Se o jogador encontrar o culpado, o jogo acaba
+            if (suspeitoAtual.getDado().equalsIgnoreCase(culpado)) {
+                System.out.println("\n🕵️ Você encontrou o(a) verdadeiro(a) culpado(a): " + culpado + "!");
+                System.out.println("Excelente trabalho, detetive!");
+                investigando = false;
+                break;
+            }
         }
 
-        System.out.println("Obrigado por jogar!");
+        // --- ACUSAÇÃO FINAL (caso o jogador não tenha encontrado antes) ---
+        if (investigando) {
+            System.out.print("\nQuem você acha que é o culpado? ");
+            sc.nextLine(); // limpar buffer
+            String palpite = sc.nextLine().trim();
+
+            if (palpite.equalsIgnoreCase(culpado)) {
+                System.out.println("\n🎉 PARABÉNS! Você analisou bem as pistas e descobriu que " + culpado + " é o(a) verdadeiro(a) culpado(a)!");
+            } else {
+                System.out.println("\n❌ Não foi dessa vez!");
+                System.out.println("Você acusou " + palpite + ", mas o(a) verdadeiro(a) culpado(a) era " + culpado + ".");
+                System.out.println("Tente novamente e analise melhor as relações entre os suspeitos.");
+            }
+        }
+
+        System.out.println("\nFim de jogo. Obrigado por jogar!");
         sc.close();
     }
 }

@@ -1,10 +1,10 @@
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class Grafo<TIPO>{
     private ArrayList<Vertice<TIPO>> suspeito;
     private ArrayList<Aresta<TIPO>> pistas;
+    private Map<TIPO, String> caracteristicas = new HashMap<>();
+
 
     public Grafo() {
         this.suspeito = new ArrayList<Vertice<TIPO>>();
@@ -42,6 +42,15 @@ public class Grafo<TIPO>{
         if (vInicio == null || vCulpado == null) return false;
         return buscar(vInicio, vCulpado, new HashSet<>());
     }
+
+    public void adicionarCaracteristica(TIPO vertice, String caracteristica) {
+        caracteristicas.put(vertice, caracteristica);
+    }
+
+    public String getCaracteristica(TIPO vertice) {
+        return caracteristicas.get(vertice);
+    }
+
 
     private boolean buscar(Vertice<TIPO> atual, Vertice<TIPO> alvo, Set<Vertice<TIPO>> visitados) {
         if (atual.equals(alvo)) return true;
