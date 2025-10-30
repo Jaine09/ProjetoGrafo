@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.*;
 
 class Grafo<T> {
+
     private Map<T, List<String>> pistas = new HashMap<>();
     private Map<T, String> caracteristicas = new HashMap<>();
     private Map<T, String> motivos = new HashMap<>();
@@ -78,6 +79,7 @@ public class Jogo {
                         };
                 break;
             case "Carol":
+
                 todasPistas = suspeito.equals(culpado) ?
                         new String[]{
                                 "Carol afirmou que viu Alice perto do escritório, mas Alice jura que estava na cozinha.",
