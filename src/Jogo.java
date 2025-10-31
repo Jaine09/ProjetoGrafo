@@ -1,136 +1,6 @@
-
-import java.util.HashMap;
-import java.util.Random;
-import java.util.Scanner;
-
-
 import java.util.*;
 
-class Grafo<T> {
-
-    private Map<T, List<String>> pistas = new HashMap<>();
-    private Map<T, String> caracteristicas = new HashMap<>();
-    private Map<T, String> motivos = new HashMap<>();
-
-    public void adicionarSuspeito(T suspeito) {
-        pistas.putIfAbsent(suspeito, new ArrayList<>());
-    }
-
-    public void adicionarCaracteristica(T suspeito, String descricao) {
-        caracteristicas.put(suspeito, descricao);
-    }
-
-    public void adicionarMotivo(T suspeito, String motivo) {
-        motivos.put(suspeito, motivo);
-    }
-
-    public String getCaracteristica(T suspeito) {
-        return caracteristicas.get(suspeito);
-    }
-
-    public String getMotivo(T suspeito) {
-        return motivos.get(suspeito);
-    }
-
-    public void adicionarPistas(String pista, T de, T para) {
-        pistas.get(de).add("De " + de + " para " + para + ": " + pista);
-    }
-
-    public String getPistaAleatoria(T suspeito) {
-        List<String> lista = pistas.get(suspeito);
-        if (lista == null || lista.isEmpty()) return "Nenhuma pista disponível.";
-        Random random = new Random();
-        return lista.get(random.nextInt(lista.size()));
-    }
-}
-
-
 public class Jogo {
-
-    private static String gerarNovaPistaUnica(String suspeito, String culpado, List<String> jaMostradas) {
-        Random random = new Random();
-        String[] todasPistas;
-
-        switch (suspeito) {
-            case "Alice":
-                todasPistas = suspeito.equals(culpado) ?
-                        new String[]{
-                                "Alice disse que viu Bob escondendo algo no bolso, mas pareceu hesitar ao contar.",
-                                "Alice afirmou que ouviu passos vindos do escritório, mas evitou comentar mais detalhes.",
-                                "Alice mencionou que limpou uma taça quebrada — a mesma que desapareceu depois."
-                        } :
-                        new String[]{
-                                "Alice comentou que viu " + culpado + " perto do escritório logo antes do grito.",
-                                "Alice jurou que estava na cozinha, mas ouviu o som de algo caindo às 23h47.",
-                                "Alice disse que achou o comportamento de " + culpado + " estranho durante o jantar."
-                        };
-                break;
-            case "Bob":
-                todasPistas = suspeito.equals(culpado) ?
-                        new String[]{
-                                "Bob garantiu que estava tocando piano às 23h47, mas ninguém ouviu música naquela noite.",
-                                "Bob disse que Carol parecia agitada e trocou de roupa duas vezes durante a noite.",
-                                "Bob comentou que David o ameaçou dias antes — mas parece ter inventado parte da história."
-                        } :
-                        new String[]{
-                                "Bob comentou que ouviu " + culpado + " caminhando pelo corredor logo após o grito.",
-                                "Bob afirmou que o piano desafinou por causa de uma batida forte — talvez algo tenha caído no andar de cima.",
-                                "Bob disse que Alice parecia muito nervosa durante o jantar."
-                        };
-                break;
-            case "Carol":
-
-                todasPistas = suspeito.equals(culpado) ?
-                        new String[]{
-                                "Carol afirmou que viu Alice perto do escritório, mas Alice jura que estava na cozinha.",
-                                "Carol disse ter ouvido Bob discutir com o Sr. Arthur, mas ninguém mais confirma isso.",
-                                "Carol comentou que David estava limpando algo com um pano, mas o objeto nunca foi encontrado."
-                        } :
-                        new String[]{
-                                "Carol contou que viu " + culpado + " mexendo no cofre do Sr. Arthur antes do jantar.",
-                                "Carol afirmou que as luvas dela sumiram naquela noite — e alguém pode ter usado isso contra ela.",
-                                "Carol disse que ouviu passos pesados vindo do corredor principal."
-                        };
-                break;
-            case "David":
-                todasPistas = suspeito.equals(culpado) ?
-                        new String[]{
-                                "David afirmou que Alice estava muito nervosa e evitava olhar para a sala do crime.",
-                                "David contou que Bob pediu silêncio sobre algo que viu no corredor.",
-                                "David disse que Carol mexeu no cofre do Sr. Arthur na noite anterior."
-                        } :
-                        new String[]{
-                                "David comentou que viu " + culpado + " segurando algo metálico antes do grito.",
-                                "David afirmou que ouviu um som de vidro quebrando, mas não achou nenhum estilhaço.",
-                                "David disse que Alice estava no jardim antes do grito, mas voltou pálida e calada."
-                        };
-                break;
-            default:
-                return "Nada de novo foi revelado.";
-        }
-
-
-        List<String> disponiveis = new ArrayList<>();
-        for (String p : todasPistas) {
-            if (!jaMostradas.contains(p)) {
-                disponiveis.add(p);
-            }
-        }
-
-
-        if (disponiveis.isEmpty()) {
-            jaMostradas.clear();
-            disponiveis.addAll(Arrays.asList(todasPistas));
-        }
-
-        String escolhida = disponiveis.get(random.nextInt(disponiveis.size()));
-        jaMostradas.add(escolhida);
-        return escolhida;
-    }
-
-
-
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
@@ -214,7 +84,7 @@ public class Jogo {
             System.out.println("\nDurante o interrogatório, " + suspeitoEscolhido + " revelou:");
             System.out.println(" \"" + novaPista + "\"");
 
-           
+
             System.out.print("\nVocê acha que " + suspeitoEscolhido + " é o culpado? (s/n): ");
             String resposta = scanner.nextLine().trim().toLowerCase();
 
@@ -236,5 +106,86 @@ public class Jogo {
 
         System.out.println("\n Fim do jogo. Obrigado por jogar o Jogo do Detetive!");
         scanner.close();
+    }
+
+    private static String gerarNovaPistaUnica(String suspeito, String culpado, List<String> jaMostradas) {
+        Random random = new Random();
+        String[] todasPistas;
+
+        switch (suspeito) {
+            case "Alice":
+                todasPistas = suspeito.equals(culpado) ?
+                        new String[]{
+                                "Alice disse que viu Bob escondendo algo no bolso, mas pareceu hesitar ao contar.",
+                                "Alice afirmou que ouviu passos vindos do escritório, mas evitou comentar mais detalhes.",
+                                "Alice mencionou que limpou uma taça quebrada — a mesma que desapareceu depois."
+                        } :
+                        new String[]{
+                                "Alice comentou que viu " + culpado + " perto do escritório logo antes do grito.",
+                                "Alice jurou que estava na cozinha, mas ouviu o som de algo caindo às 23h47.",
+                                "Alice disse que achou o comportamento de " + culpado + " estranho durante o jantar."
+                        };
+                break;
+            case "Bob":
+                todasPistas = suspeito.equals(culpado) ?
+                        new String[]{
+                                "Bob garantiu que estava tocando piano às 23h47, mas ninguém ouviu música naquela noite.",
+                                "Bob disse que Carol parecia agitada e trocou de roupa duas vezes durante a noite.",
+                                "Bob comentou que David o ameaçou dias antes — mas parece ter inventado parte da história."
+                        } :
+                        new String[]{
+                                "Bob comentou que ouviu " + culpado + " caminhando pelo corredor logo após o grito.",
+                                "Bob afirmou que o piano desafinou por causa de uma batida forte — talvez algo tenha caído no andar de cima.",
+                                "Bob disse que Alice parecia muito nervosa durante o jantar."
+                        };
+                break;
+            case "Carol":
+
+                todasPistas = suspeito.equals(culpado) ?
+                        new String[]{
+                                "Carol afirmou que viu Alice perto do escritório, mas Alice jura que estava na cozinha.",
+                                "Carol disse ter ouvido Bob discutir com o Sr. Arthur, mas ninguém mais confirma isso.",
+                                "Carol comentou que David estava limpando algo com um pano, mas o objeto nunca foi encontrado."
+                        } :
+                        new String[]{
+                                "Carol contou que viu " + culpado + " mexendo no cofre do Sr. Arthur antes do jantar.",
+                                "Carol afirmou que as luvas dela sumiram naquela noite — e alguém pode ter usado isso contra ela.",
+                                "Carol disse que ouviu passos pesados vindo do corredor principal."
+                        };
+                break;
+            case "David":
+                todasPistas = suspeito.equals(culpado) ?
+                        new String[]{
+                                "David afirmou que Alice estava muito nervosa e evitava olhar para a sala do crime.",
+                                "David contou que Bob pediu silêncio sobre algo que viu no corredor.",
+                                "David disse que Carol mexeu no cofre do Sr. Arthur na noite anterior."
+                        } :
+                        new String[]{
+                                "David comentou que viu " + culpado + " segurando algo metálico antes do grito.",
+                                "David afirmou que ouviu um som de vidro quebrando, mas não achou nenhum estilhaço.",
+                                "David disse que Alice estava no jardim antes do grito, mas voltou pálida e calada."
+                        };
+                break;
+            default:
+                return "Nada de novo foi revelado.";
+        }
+
+
+        List<String> disponiveis = new ArrayList<>();
+        for (String p : todasPistas) {
+            if (!jaMostradas.contains(p)) {
+                disponiveis.add(p);
+            }
+        }
+
+
+        if (disponiveis.isEmpty()) {
+            jaMostradas.clear();
+            disponiveis.addAll(Arrays.asList(todasPistas));
+        }
+
+        String escolhida = disponiveis.get(random.nextInt(disponiveis.size()));
+        jaMostradas.add(escolhida);
+        return escolhida;
     }
 }
